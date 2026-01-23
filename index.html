@@ -12,15 +12,6 @@
 
   <input type="text" id="playerId" placeholder="プレーヤーID">
 
-  <select id="training">
-    <option value="">筋トレを選択</option>
-    <option value="chest">胸トレ</option>
-    <option value="back">背中トレ</option>
-    <option value="leg">脚トレ</option>
-  </select>
-
-  <button onclick="runTraining()">トレーニング実行</button>
-
   <div class="avatar">
     <img id="avatarImage" src="images/base.png">
   </div>
@@ -30,11 +21,21 @@
     <p>連続トレ日数：1日</p>
   </div>
   
+  <select id="training">
+    <option value="">筋トレを選択</option>
+    <option value="chest">胸トレ</option>
+    <option value="back">背中トレ</option>
+    <option value="leg">脚トレ</option>
+  </select>
+
+  <button onclick="runTraining()">トレーニング実行</button>
+  
 </div>
 
 <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
