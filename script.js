@@ -9,13 +9,16 @@ function runTraining() {
   }
 
   switch (training) {
-    case "bench":
+    case "run":
+      status.run += 1;
+      break;
+    case "chest":
       status.chest += 1;
       break;
-    case "pullup":
+    case "back":
       status.back += 1;
       break;
-    case "legpress":
+    case "leg":
       status.leg += 1;
       break;
   }
@@ -23,6 +26,7 @@ function runTraining() {
   avatar.src = `images/${training}.png`;
 
 }
+
 
 
 
