@@ -7,5 +7,7 @@ function runTraining() {
     return;
   }
 
-  avatar.src = `images/${training}.png`;
+  // avatar.src = `images/${training}.png`;
+  avatar.src = `images/player_lv100.png`;
+
 }
