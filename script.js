@@ -26,16 +26,16 @@ function runTraining() {
 
   switch (training) {
     case "run":
-      status.HPLv += 1;
+      status.run += 1;
       break;
     case "chest":
-      status.chestLv += 1;
+      status.chest += 1;
       break;
     case "back":
-      status.backLv += 1;
+      status.back += 1;
       break;
     case "leg":
-      status.legLv += 1;
+      status.leg += 1;
       break;
   }
 
@@ -44,6 +44,7 @@ function runTraining() {
   avatar.src = `images/${training}.png`;
 
 }
+
 
 
 
