@@ -19,10 +19,11 @@ function runTraining() {
       status.leg += 1;
       break;
   }
+  
   avatar.src = `images/${training}.png`;
-  // avatar.src = `images/player_lv100.png`;
 
 }
+
 
 
 
