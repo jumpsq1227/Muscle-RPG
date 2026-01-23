@@ -1,4 +1,4 @@
-// 初期ステータス
+// ステータス
 const status = {
   run: 1,
   chest: 1,
@@ -24,26 +24,51 @@ function runTraining() {
     return;
   }
 
-  switch (training) {
-    case "run":
-      status.run += 1;
-      break;
-    case "chest":
-      status.chest += 1;
-      break;
-    case "back":
-      status.back += 1;
-      break;
-    case "leg":
-      status.leg += 1;
-      break;
-  }
-
+  // ステータス、アバター更新
+  player[training]++;
   updateStatusView();
-  
   avatar.src = `images/${training}.png`;
 
+  // 画面切り替え
+  document.getElementById("main-screen").classList.add("hidden");
+  document.getElementById("result-screen").classList.remove("hidden");
+
+    // リザルト表示
+  const textMap = {
+    run: "体力 Lv UP！",
+    chest: "胸筋力 Lv UP！",
+    back: "背筋力 Lv UP！",
+    leg: "脚力 Lv UP！"
+  };
+
+  const resultText = document.getElementById("resultText");
+  resultText.textContent = textMap[type];
+  resultText.className = "level-up";
 }
+
+function backToMain() {
+  document.getElementById("result-screen").classList.add("hidden");
+  document.getElementById("main-screen").classList.remove("hidden");
+  updateStatus();
+}
+  // switch (training) {
+  //   case "run":
+  //     status.run += 1;
+  //     break;
+  //   case "chest":
+  //     status.chest += 1;
+  //     break;
+  //   case "back":
+  //     status.back += 1;
+  //     break;
+  //   case "leg":
+  //     status.leg += 1;
+  //     break;
+  // }
+
+
+}
+
 
 
 
