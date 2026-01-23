@@ -1,5 +1,6 @@
 // 初期ステータス
 const status = {
+  run: 1,
   chest: 1,
   back: 1,
   leg: 1
@@ -7,6 +8,7 @@ const status = {
 
 // 表示更新
 function updateStatusView() {
+  document.getElementById("HPLv").textContent = status.run;
   document.getElementById("chestLv").textContent = status.chest;
   document.getElementById("backLv").textContent = status.back;
   document.getElementById("legLv").textContent = status.leg;
@@ -42,6 +44,7 @@ function runTraining() {
   avatar.src = `images/${training}.png`;
 
 }
+
 
 
 
