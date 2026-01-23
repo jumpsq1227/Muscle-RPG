@@ -1,3 +1,17 @@
+// 初期ステータス
+const status = {
+  chest: 1,
+  back: 1,
+  leg: 1
+};
+
+// 表示更新
+function updateStatusView() {
+  document.getElementById("chestLv").textContent = status.chest;
+  document.getElementById("backLv").textContent = status.back;
+  document.getElementById("legLv").textContent = status.leg;
+}
+
 // ボタン実行
 function runTraining() {
   const training = document.getElementById("training").value;
@@ -22,10 +36,13 @@ function runTraining() {
       status.legLv += 1;
       break;
   }
+
+  updateStatusView();
   
   avatar.src = `images/${training}.png`;
 
 }
+
 
 
 
