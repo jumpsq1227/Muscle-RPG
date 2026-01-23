@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>GROWfit Prototype</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>GROWfit</h1>
+
+  <input type="text" id="playerId" placeholder="プレーヤーID">
+
+  <select id="training">
+    <option value="">筋トレを選択</option>
+    <option value="chest">胸トレ</option>
+    <option value="back">背中トレ</option>
+    <option value="leg">脚トレ</option>
+  </select>
+
+  <button onclick="runTraining()">トレーニング実行</button>
+
+  <div class="avatar">
+    <img id="avatarImage" src="images/base.png">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
