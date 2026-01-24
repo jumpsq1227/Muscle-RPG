@@ -64,23 +64,9 @@ function backToMain() {
   document.getElementById("main-screen").classList.remove("hidden");
   updateStatus();
 }
-  // switch (training) {
-  //   case "run":
-  //     status.run += 1;
-  //     break;
-  //   case "chest":
-  //     status.chest += 1;
-  //     break;
-  //   case "back":
-  //     status.back += 1;
-  //     break;
-  //   case "leg":
-  //     status.leg += 1;
-  //     break;
-  // }
-
 
 }
+
 
 
 
