@@ -6,44 +6,221 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!-- ===== プレイヤー選択画面 ===== -->
+<div id="playerSelectScreen">
+  <h1>Muscle RPG</h1>
+  <div class="story-teaser">
+    <!-- <p class="story-teaser-title">＜ストーリー＞</p> -->
+    <p>
+      【ジムWORLD】が荒廃してしばらく経った頃、<br>
+      "あなた"が運動を始めた。<br>
+      "たった1回の運動"が、あなたとジムWORLDを救う。
+    </p>
+  </div>
+  <select id="playerSelect"></select>
+  <button id="startBtn">筋トレをはじめる</button>
   
-<div class="container">
-    <h1>Muscle RPG</h1>
+  <button id="resetAllBtn">全プレイヤー初期化</button>
+</div>
+
+<!-- ===== ストーリー画面（新規開始時のみ） ===== -->
+<div id="story-screen" class="hidden">
+  <div class="story-panel">
+    <h2 class="story-title">ストーリー</h2>
+    <p class="story-text">
+      時は、20XX年。<br>
+      この世界の名は、【ジムWORLD】。<br>
+      筋肉の妖精たちが筋トレをして暮らしていた。<br>
+      突如現れた魔王軍により、妖精は敗北してしまった...<br>
+      <br>
+      【ジムWORLD】が荒廃してしばらく経った頃、<br>
+      "あなた"がトレーニーに選ばれた。<br>
+      "たった1回の運動"が、あなたと世界を救っていく。
+    </p>
+
+    <button id="storyNextBtn">筋トレを始める ▶</button>
+  </div>
+</div>
   
-    <input type="text" id="playerId" placeholder="プレーヤーID">
-    
-    <div class="status">
-      <h2>勇者の強さ</h2>
-      <ul>
-        <li>体力：Lv <span id="HPLv">1</span></li>
-        <li>胸筋力：Lv <span id="chestLv">1</span></li>
-        <li>背筋力：Lv <span id="backLv">1</span></li>
-        <li>脚力：Lv <span id="legLv">1</span></li>
-      </ul>
+<!-- ===== メイン画面 ===== -->
+<div id="main-screen" class="hidden">
+  <p id="playerNameText" class="player-name"></p>
+
+<!-- ===== ステータス・アバター欄 ===== -->
+<div class="status-box">
+  <!-- ジム回復率 -->
+  <div class="world-recovery">
+    <div class="world-label">
+      ジムWORLD　の復興度： <span id="worldRecoveryText">0%</span>　
     </div>
-    
-    <div class="avatar">
-      <img id="avatarImage" src="images/base.png">
+    <div class="hpbar">
+      <div class="hpbar-fill" id="worldRecoveryFill" style="width:0%"></div>
     </div>
-    
-    <select id="training">
-      <option value="">トレーニングを選択</option>
-      <option value="run">ランニング</option>
-      <option value="chest">胸トレ</option>
-      <option value="back">背中トレ</option>
-      <option value="leg">脚トレ</option>
-    </select>
+    <div class="weekly-title">
+      今週の運動：<span id="weekCountText">0</span>日/4日　　　　　　　
+    </div>
+  </div>
+  <div class="status-inner">
+    <!-- ステータス -->
+    <div class="status-text">
+      <!-- プレイヤーのステータス -->
+      <p>・体力 Lv <span id="HPLv">1</span></p>
+      <p>・胸筋 Lv <span id="chestLv">1</span></p>
+      <p>・背筋 Lv <span id="backLv">1</span></p>
+      <p>・脚力 Lv <span id="legLv">1</span></p>
+      <!--  継続安定度インジケータ -->
+      <div class="reliability-row">
+        <span class="reliability-label">・継続安定度　</span>
+        <span id="reliabilityStars" class="reliability-stars">★★★☆☆</span>
+        <!-- <div id="stabilityText" class="stability-text">
+        状態：要支援
+      　</div> -->
+      </div>
+    </div>
+
+    <!-- アバター -->
+    <div class="avatar-wrap" id="avatarWrap">
+      <img src="images/base.png" class="avatar" id="avatarImage">
+      <!-- 右上チップ（常時表示） -->
+      <button id="itemToggleBtn" class="item-chip" type="button" aria-label="アイテムを開く">
+        🥤×0
+      </button>
+      <!-- 小ポップ（押したら開く） -->
+      <div id="itemMenu" class="item-pop hidden" role="dialog" aria-label="アイテム">
+        <div class="item-row">
+          <span>超回復スポドリ</span>
+          <span class="item-count">×<span id="drinkCountText">0</span></span>
+        </div>
+        <div id="itemHintText" class="item-hint">
+          プロテインスライムを倒すとスポドリを入手できます。
+        </div>
+        <button id="useDrinkBtn" class="item-use" type="button">
+          使う（次回復興2倍）
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- ===== アクション欄 ===== -->
+  <div class="button-group">
+    <button id="trainingToggleBtn" class="btn-training">
+      トレーニングする ▼
+    </button>
   
-    <button onclick="runTraining()">トレーニング実行</button>
+    <div id="trainingMenu" class="training-menu hidden">
+      <button data-train="run">ウォーキング・ランニング</button>
+      <button data-train="chest">腕・胸トレ</button>
+      <button data-train="back">肩・背中トレ</button>
+      <button data-train="leg">脚トレ</button>
+      <!-- <button data-train="walk">ウォーキング</button> -->
+    </div>
+
+    <button class="btn-quest" onclick="startQuest()">
+      魔王軍とたたかう ▶
+    </button>
     
   </div>
 
+  <button class="visit-gym-btn" onclick="visitGym()">
+    ジムを見学する
+  </button>
+  
+  <button class="back-player-btn" onclick="backToPlayerSelect()">
+    プレイヤー選択へ
+  </button>
 
+  <!-- ===== 近況バナー ===== -->
+<div id="newsBanner" class="banner hidden"></div>
+  
 </div>
 
+<!-- ===== クエスト画面 ===== -->
+<div id="quest-screen" class="screen hidden">
+  <h2 id="monsterName"></h2>
+  <img id="monsterImage" class="monster">
+
+  <!-- モンスターHP -->
+  <div class="monster-hp">
+    <div class="monster-hp-label">
+      モンスターHP：<span id="monsterHpText">100%</span>
+    </div>
+    <div class="hpbar">
+      <div class="hpbar-fill" id="monsterHpFill" style="width:100%"></div>
+    </div>
+  </div>
+
+  <!-- 技選択 -->
+  <div class="skill-box">
+    <select id="skillSelect"></select>
+    <button id="skillUseBtn">たたかう</button>
+  </div>
+</div>
+
+<!-- ===== リザルト画面 ===== -->
+<div id="result-screen" class="screen hidden">
+  <img id="resultImage" class="result-image hidden">
+  <p id="resultText" class="result"></p>
+  <button onclick="backToMain()">もどる</button>
+</div>
+
+<!-- ===== ジム画面 ===== -->
+<div id="gym-screen" class="screen hidden">
+  <div class="world-label">
+    【ジムWORLD】の復興度 <span id="worldRecoveryText">0%</span>
+  </div>
+  <div class="hpbar">
+    <div class="hpbar-fill" id="worldRecoveryFill" style="width:0%"></div>
+  </div>
+  <img id="gym-Image" class="gym-image hidden">
+  <p id="gymComment" class="gym-comment"></p>
+  <button onclick="backToMain()">もどる</button>
+</div>
+  
 <script src="script.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
