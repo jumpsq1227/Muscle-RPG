@@ -1,132 +1,250 @@
-/* ===== 全体設定 ===== */
-* {
-  box-sizing: border-box;
+/* =========================
+   Base / Tokens
+========================= */
+:root{
+  --bg1:#1b2735;
+  --bg2:#090a0f;
+  --txt:#fff;
+  --black:#000;
+  --ui-bg:#222;
+  --ui-bg-hover:#444;
+  --border:#fff;
+  --panel: rgba(0,0,0,0.5);
+  --shadow: 2px 2px 0 var(--black);
 }
 
-body {
+html, body{
   margin: 0;
-  font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", sans-serif;
-  background: linear-gradient(180deg, #1e1e2f, #121212);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  min-height: 100svh;
 }
 
-/* ===== アプリ本体 ===== */
-.container {
-  width: 360px;
-  height: 640px;
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+body{
+  font-family: "PixelMplus10", monospace;
+  background: linear-gradient(var(--bg1), var(--bg2)) no-repeat;
+  color: var(--txt);
+  text-align: center;
+}
+
+/* =========================
+   Utilities
+========================= */
+.hidden{ display:none !important; }
+
+.screen{
   padding: 20px;
-  display: flex;
-  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* =========================
+   Common UI
+========================= */
+select,
+button{
+  font-size: 16px;
+  padding: 8px 12px;
+  margin: 6px;
+  background: var(--ui-bg);
+  color: var(--txt);
+  border: 2px solid var(--border);
+  cursor: pointer;
+}
+
+button:hover{
+  background: var(--ui-bg-hover);
+}
+
+.btn-training{
+  background: linear-gradient(#2ecc71, #27ae60);
+  border-color:#1e8449;
+}
+.btn-quest{
+  background: linear-gradient(#e74c3c, #c0392b);
+  border-color:#922b21;
+}
+
+/* =========================
+   Components
+========================= */
+
+/* ---- Status ---- */
+.status-box{
+  width: 320px;
+  margin: 10px auto;
+  padding: 10px;
+  border: 2px solid var(--border);
+  background: var(--panel);
+}
+
+.status-inner{
+  display:flex;
   justify-content: space-between;
 }
 
-/* ===== タイトル ===== */
-h1 {
-  text-align: center;
-  margin: 0;
-  color: #ff0000;
-  letter-spacing: 2px;
+.status-text{
+  font-size: 14px;
+  text-align: left;
 }
 
-/* ===== 入力エリア ===== */
-input, select {
-  width: 100%;
+/* ---- Avatar ---- */
+.avatar-wrap{
+  position: relative;
+  display: inline-block;
+}
+.avatar{
+  height: 140px;
+  image-rendering: pixelated;
+  filter: drop-shadow(2px 2px 0 var(--black));
+}
+
+/* ---- Item ---- */
+.item-chip{
+   position: absolute;
+   top: 6px;
+   right: 6px;
+   transform: translateX(-80px);
+}
+.item-pop{
+   position: absolute;
+   top: 34px;
+   right: 6px;
+   z-index: 70;
+   width: 190px;
+   padding: 10px;
+   background: rgba(0,0,0,0.9);
+   border: 2px solid #fff;
+   box-shadow: 2px 2px 0 #000;
+   box-sizing: border-box;
+   text-align: left;
+}
+.item-hint{
+   margin: 6px 0 8px;
+   white-space: normal;
+} 
+.item-pop-title{
+   font-size: 12px;
+   margin-bottom: 6px;
+   opacity: 0.95;
+} 
+.item-use{
+   width: 100%;
+   white-space: nowrap;
+   font-size: 12px;
+}
+.item-use:hover{
+   background: linear-gradient(#58d68d, #2ecc71);
+}
+.item-use:disabled{
+   opacity: 0.6;
+   cursor: not-allowed;
+}
+
+/* ---- World Recovery ---- */
+.hpbar{
+  height: 16px;
+  border: 2px solid var(--border);
+  background: rgba(0,0,0,0.35);
+}
+.hpbar-fill{
+  height: 100%;
+  background: linear-gradient(#2ecc71, #27ae60);
+  transition: width 0.35s;
+}
+
+/* ---- Reliability ---- */
+.reliability-row{
+  display:flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+.reliability-stars{
+  letter-spacing: 1px;
+}
+
+/* ---- Banner ---- */
+.banner{
+  width: min(92vw, 420px);
+  margin: 10px auto;
+  padding: 10px;
+  border: 2px solid var(--border);
+  background: rgba(0,0,0,0.65);
+}
+
+/* =========================
+   Screens
+========================= */
+
+/* --- Player Select --- */
+#playerSelectScreen{
+  min-height: 100vh;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 24px;
+  background: url("images/bg_field.png") no-repeat center;
+  background-size: min(90vw, 400px);
+}
+
+#resetAllBtn{
+  margin-top: auto;
+  margin-bottom: 18px;
+}
+
+/* --- Story Screen --- */
+#story-screen{
+  min-height: 100vh;
+  display:flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 40px;
+  background: url("images/bg_field.png") no-repeat center;
+  background-size: min(90vw, 400px);
+}
+
+.story-panel{
+  width: min(92vw, 420px);
   padding: 14px;
-  margin-top: 12px;
-  border-radius: 14px;
-  border: 1px solid #ddd;
-  font-size: 16px;
-  outline: none;
+  border: 2px solid var(--border);
+  background: rgba(0,0,0,0.65);
 }
 
-input:focus, select:focus {
-  border-color: #3b5bfd;
+.monster{
+   width: 120px;
+   display: block;
+   margin: 16px auto;
 }
 
-/* ===== 実行ボタン ===== */
-button {
-  margin-top: 12px;
-  padding: 16px;
-  border-radius: 18px;
-  border: none;
-  background: linear-gradient(135deg, #ff8a00, #ff5f6d);
-  color: white;
-  font-size: 17px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 8px 16px rgba(255,95,109,0.4);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+.monster-hp{
+  width: min(92vw, 320px);
+  margin: 10px auto;
+  text-align: left;
+  font-size: 13px;
 }
 
-button:active {
-  transform: translateY(2px);
-  box-shadow: 0 4px 8px rgba(255,95,109,0.3);
+.monster-hp-label{
+  display:flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  opacity: 0.95;
 }
 
-/* ===== アバター表示 ===== */
-.avatar {
-  margin-top: 16px;
-  flex-grow: 1;
-  background: linear-gradient(to top,#1c1f3a,#2d3a6e,#5a7fdc);
-  border-radius: 22px;
-  display: flex;
+.skill-box{
+  width: min(92vw, 320px);
+  margin: 10px auto;
+  display:flex;
+  gap: 8px;
   justify-content: center;
   align-items: center;
 }
 
-.avatar img {
-  width: 160px;
-  transition: transform 0.3s ease;
+.skill-box select{
+  flex: 1;
+  min-width: 0;
 }
 
-.avatar img:hover {
-  transform: scale(1.05);
+.gym-image{
+   width: 100%;
+   max-width: 360px;
+   margin: 16px auto;
+   image-rendering: pixelated;
+   display: block;
 }
-
-/* ===== ステータス ===== */
-.status h2 {
-  font-size: 14px;
-}
-
-.status {
-  margin-top: 12px;
-  background: #f9fafc;
-  border-radius: 18px;
-  padding: 14px;
-  font-size: 14px;
-  color: #444;
-}
-
-.status p {
-  margin: 4px 0;
-}
-
-/* ===== 成功メッセージ ===== */
-.success {
-  text-align: center;
-  color: #2ecc71;
-  font-weight: bold;
-  margin-top: 6px;
-}
-
-/* ===== フッター（将来拡張用） ===== */
-.footer {
-  text-align: center;
-  font-size: 12px;
-  color: #aaa;
-}
-
-
-
-
-
-
-
-
-
