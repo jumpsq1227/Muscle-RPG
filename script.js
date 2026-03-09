@@ -1156,6 +1156,7 @@ window.startQuest = startQuest;
 window.backToMain = backToMain;
 window.visitGym = visitGym;
 window.backToPlayerSelect = backToPlayerSelect;
+window.runTournamentBattle = runTournamentBattle;
 
 
 
