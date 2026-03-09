@@ -2,7 +2,7 @@
    1) 定数・設定
 ========================================================= */
 // プレイヤー管理
-const players = ["おがわ", "いまえだ", "わたなべ"];
+const players = ["おがわ", "いまえだ", "わたなべ","いで"];
 
 // 初期ステータス
 const defaultStatus = { run: 1, chest: 1, back: 1, leg: 1 };
@@ -29,40 +29,80 @@ const SLIME = {
   cooldownDays: 2 // 連日出現抑制
 };
 
+const CHARACTER_CONFIG = {
+  male: {
+    name: "勇者",
+    se: {
+      train: "sound/male/train.mp3",
+      attack: "sound/male/attack.mp3",
+      win: "sound/male/win.mp3",
+      lose: "sound/male/lose.mp3",
+    },
+    trainingStyle: "power", // 表現タイプ
+    skills: {
+      run:   (lv) => `剣技Lv${lv}`,
+      chest: (lv) => `拳技Lv${lv}`,
+      back:  (lv) => `背負投げLv${lv}`,
+      leg:   (lv) => `蹴り技Lv${lv}`,
+    },
+  },
+  female: {
+    name: "魔法使い",
+    se: {
+      train: "sound/female/train.mp3",
+      attack: "sound/female/attack.mp3",
+      win: "sound/female/win.mp3",
+      lose: "sound/female/lose.mp3",
+    },
+    trainingStyle: "magic",
+    skills: {
+      run:   (lv) => `風魔法Lv${lv}`,
+      chest: (lv) => `炎魔法Lv${lv}`,
+      back:  (lv) => `氷魔法Lv${lv}`,
+      leg:   (lv) => `重力魔法Lv${lv}`,
+    },
+  },
+  // 将来追加例
+  // monk: { ... }
+};
+
+
 // 表示用ラベル
 const muscleLabel = { run: "体力", chest: "胸筋", back: "背筋", leg: "脚力" };
 
 // トレーニング定義
 const trainingInfo = {
-  run:   { label: "体力", image: "images/run.png" },
-  chest: { label: "胸筋", image: "images/chest.png" },
-  back:  { label: "背筋", image: "images/back.png" },
-  leg:   { label: "脚力", image: "images/leg.png" }
+  run:   { label: "体力" },
+  chest: { label: "胸筋" },
+  back:  { label: "背筋" },
+  leg:   { label: "脚力" }
 };
+
 
 // 技関係
 const monsterHpText = document.getElementById("monsterHpText");
 const monsterHpFill = document.getElementById("monsterHpFill");
 
-const SKILLS = {
-  run:  (lv) => ({ key:"run",  name: `剣技Lv${lv}`,  dmg: 30 + lv*2 }),
-  chest:(lv) => ({ key:"chest",name:`拳技Lv${lv}`,    dmg: 30 + lv*2 }),
-  back: (lv) => ({ key:"back", name:`背負投げLv${lv}`,  dmg: 30 + lv*2 }),
-  leg:  (lv) => ({ key:"leg",  name:`蹴り技Lv${lv}`,dmg: 30 + lv*2 }),
-};
+// const SKILLS = {
+//   run:  (lv) => ({ key:"run",  name: `剣技Lv${lv}`,  dmg: 30 + lv*2 }),
+//   chest:(lv) => ({ key:"chest",name:`拳技Lv${lv}`,    dmg: 30 + lv*2 }),
+//   back: (lv) => ({ key:"back", name:`背負投げLv${lv}`,  dmg: 30 + lv*2 }),
+//   leg:  (lv) => ({ key:"leg",  name:`蹴り技Lv${lv}`,dmg: 30 + lv*2 }),
+// };
+
+const SKILL_DAMAGE = (lv) => 30 + lv * 2;
 
 // モンスター一覧（通常進行）
 const monsterList = [
   { name: "スライム", level: 5, image: "images/monster/slime.png" },
-  { name: "スライムちょい強", level: 7, image: "images/monster/slime.png" },
-  { name: "ゴースト", level: 9, image: "images/monster/ghost.png" },
-  { name: "ハンバーガーゴーレム", level: 12, image: "images/monster/golem.png" },
-  { name: "スライム強", level: 14, image: "images/monster/slime.png" },
-  { name: "がいこつ戦士", level: 16, image: "images/monster/skeleton.png" },
-  { name: "ぽっちゃりドラゴン", level: 20, image: "images/monster/dragon.png" },
-  { name: "魔王", level: 28, image: "images/monster/maou.png" },
-  { name: "ボディービルダー", level: 35, image: "images/monster/bodybuilder.png" },
-  { name: "ボディービルダー【強】", level: 42, image: "images/monster/bodybuilder2.png" },
+  { name: "ゴースト", level: 6, image: "images/monster/ghost.png" },
+  { name: "ハンバーガーゴーレム", level: 7, image: "images/monster/golem.png" },
+  { name: "スライム強", level: 8, image: "images/monster/slime.png" },
+  { name: "がいこつ戦士", level: 9, image: "images/monster/skeleton.png" },
+  { name: "ぽっちゃりドラゴン", level: 10, image: "images/monster/dragon.png" },
+  { name: "魔王", level: 12, image: "images/monster/maou.png" },
+  { name: "ボディービルダー", level: 15, image: "images/monster/bodybuilder.png" },
+  { name: "ボディービルダー【強】", level: 20, image: "images/monster/bodybuilder2.png" },
 ];
 
 // SE
@@ -75,6 +115,7 @@ const seattack    = new Audio("sound/attack.mp3");
 const seDamage   = new Audio("sound/damage.mp3");
 const setonext    = new Audio("sound/tonext.mp3");
 const seDrink   = new Audio("sound/drink.mp3");
+const seMagic   = new Audio("sound/magic.mp3");
 
 // ジム城ビジュアル定義
 const gymStages = [
@@ -89,6 +130,7 @@ const gymStages = [
    2) 状態（プレイヤーごとのセーブ対象）
 ========================================================= */
 let currentPlayer = null;
+let avatarType = "male"; // "male" or "female"
 
 let status = { ...defaultStatus };
 let worldRecovery = 0;           // 0〜100
@@ -223,12 +265,28 @@ function diffDaysTokyo(fromKey, toKey) {
 function clamp(x, lo, hi) { return Math.max(lo, Math.min(hi, x)); }
 function sigmoid(x) { return 1 / (1 + Math.exp(-x)); }
 
-// SE
+//SE
 function playSE(se) {
   try {
     se.currentTime = 0;
     se.play();
   } catch (e) {}
+}
+
+//バトル時のアニメーション
+function animateMonster(type) {
+  if (!monsterImage) return;
+  monsterImage.classList.remove("monster-hit", "monster-counter");
+  // 強制リフロー（同じアニメを連続再生できるように）
+  void monsterImage.offsetWidth;
+  if (type === "hit") {
+    monsterImage.classList.add("monster-hit");
+    playSE(seattack);
+  }
+  if (type === "counter") {
+    monsterImage.classList.add("monster-counter");
+    playSE(seDamage);
+  }
 }
 
 /* =========================================================
@@ -378,7 +436,8 @@ function calcDropoutRiskForPlayerData(p) {
 
 function maybeShowNewsBanner() {
   if (!newsBanner) return;
-  if (Math.random() > 0.55) return;
+  //コメントアウトで、フェイク近況バナーを「必ず出す」ようにする
+  // if (Math.random() > 0.55) return;
 
   const others = players.filter(n => n !== currentPlayer);
   const candidates = [];
@@ -389,7 +448,10 @@ function maybeShowNewsBanner() {
     const risk = calcDropoutRiskForPlayerData(data);
     if (risk >= 0.45) candidates.push({ name: n, risk });
   }
-  if (candidates.length === 0) return;
+   if (candidates.length === 0) {
+     setBanner("マッスリーヌ姫「ありがとう。また世界を救ってくれたようね。」");
+     return;
+   }
 
   candidates.sort((a, b) => b.risk - a.risk);
   setBanner(makeFakeActivityText(candidates[0].name));
@@ -399,7 +461,9 @@ function maybeShowNewsBanner() {
    10) 保存 / 読み込み
 ========================================================= */
 function saveStatus() {
+  if (!currentPlayer) return; // ★保険
   const saveData = {
+    avatarType,
     status,
     monsterIndex: currentMonsterIndex,
     weeklyBonusGranted: weeklyBonusGranted,
@@ -440,6 +504,7 @@ function loadStatus() {
     weekStartKey = parsed.weekStartKey ?? getWeekStartKeyTokyo();
     weekTrainedDays = parsed.weekTrainedDays ?? [];
     storySeen = parsed.storySeen ?? false;
+    avatarType = parsed.avatarType ?? "male";
   } else {
     status = { ...defaultStatus };
     currentMonsterIndex = 0;
@@ -456,12 +521,19 @@ function loadStatus() {
     weekStartKey = getWeekStartKeyTokyo();
     weekTrainedDays = [];
     storySeen = false;
+    avatarType = "male";
   }
 }
 
 /* =========================================================
    11) UI更新
 ========================================================= */
+function getSkill(type, lv) {
+  const cfg = CHARACTER_CONFIG[avatarType] ?? CHARACTER_CONFIG.male;
+  const nameFn = cfg.skills?.[type] ?? ((x) => `${type}Lv${x}`);
+  return { key: type, name: nameFn(lv), dmg: SKILL_DAMAGE(lv) };
+}
+
 function updateStatusView() {
   HPLv.textContent = status.run;
   chestLv.textContent = status.chest;
@@ -485,6 +557,8 @@ function updateWorldView() {
 }
 
 function updateAvatarByTopStatus(preferType = null) {
+  if (!avatarImage) return;
+   
   const types = ["run", "chest", "back", "leg"];
   let maxLv = -Infinity;
   for (const t of types) if (status[t] > maxLv) maxLv = status[t];
@@ -494,10 +568,10 @@ function updateAvatarByTopStatus(preferType = null) {
   if (preferType && topTypes.includes(preferType)) chosen = preferType;
 
   const lv = status[chosen];
-  avatarImage.src = `images/player/${chosen}_Lv${lv}.png`;
+  avatarImage.src = `images/player/${avatarType}/${chosen}_Lv${lv}.png`;
   avatarImage.onerror = () => {
     avatarImage.onerror = null;
-    avatarImage.src = `images/player/${chosen}_LvMAX.png`;
+    avatarImage.src = `images/player/${avatarType}/${chosen}_LvMAX.png`;
   };
 }
 
@@ -540,7 +614,12 @@ function isNewGame(){
   return allLv1 && !storySeen;
 }
 
-// トレーニング実行（walk削除でシンプル化）
+// トレーニング実行
+function getTrainingImage(trainType) {
+  const style = CHARACTER_CONFIG[avatarType].trainingStyle;
+  return `images/training/${style}/${trainType}.png`;
+}
+
 function executeTraining(trainType) {
   if (!(trainType in status)) return;
 
@@ -583,21 +662,27 @@ function executeTraining(trainType) {
 
   resultText.innerHTML =
     `今日もお疲れ様！\n${info.label} がレベルアップ！<br>
-    自販機からプロテイン2本を購入<br>
-     <span class="heal">ジムが${gained}%復興した</span>`;
+    プロテイン2本を入手<br>
+    <span class="recovery-text">ジムが${gained}%復興した</span>`;
 
   playSE(seLevelUp);
 
   const resultImage = document.getElementById("resultImage");
-  resultImage.src = info.image;
+  // resultImage.src = info.image;
+
+  // 2/5追加分
+  resultImage.src = getTrainingImage(trainType);
+  resultImage.onerror = () => {
+    resultImage.src = `images/training/power/${trainType}.png`;
+  };
   resultImage.classList.remove("hidden");
 
   switchScreen("result-screen");
   maybeShowNewsBanner();
 }
 
-let skillSelect;
-let skillUseBtn;
+let skillSelect = null;
+let skillUseBtn = null;
 
 function bindQuestDom(){
   skillSelect = document.getElementById("skillSelect");
@@ -615,7 +700,8 @@ function updateSkillSelect(){
   const types = ["run","chest","back","leg"];
   for (const t of types){
     const lv = status[t];
-    const s = SKILLS[t](lv);
+    // const s = SKILLS[t](lv)
+    const s = getSkill(t, lv);
 
     const opt = document.createElement("option");
     opt.value = t;                 // 属性キー
@@ -663,7 +749,7 @@ function handleVictory(skill){
     superDrinkCount += 1;
     proteinSlimeReady = false;
   } else {
-    // ✅ 通常モンスター勝利：ジム復興度を進める
+    // 通常モンスター勝利：ジム復興度を進める
     worldRecovery = Math.min(100, worldRecovery + 3);
     gained = worldRecovery - before;
    
@@ -680,9 +766,8 @@ function handleVictory(skill){
   if (gained > 0) {
     showResult(
       `一撃必殺！<br>
-       <span class="heal">${skill.name}</span>！<br>
-       モンスターを倒した！<br>
-       <span class="heal">ジムが${gained}%復興した</span>`
+       <span class="heal">${skill.name}</span>で倒した！<br>
+       <span class="recovery-text">ジムが${gained}%復興した</span>`
     );
   } else {
     showResult(
@@ -705,7 +790,8 @@ function battle(){
   if (!(chosenType in status)) return;
 
   const lv = status[chosenType];
-  const skill = SKILLS[chosenType](lv);
+  // const skill = SKILLS[chosenType](lv);
+  const skill = getSkill(chosenType, lv);
 
   const monster = proteinSlimeReady
     ? proteinSlime
@@ -733,17 +819,20 @@ function battle(){
 
   // HP減少
   setMonsterHp(monsterHp - damage);
+  // ★攻撃ヒット演出
+  animateMonster("hit");
 
   setTimeout(() => {
     if (monsterHp <= 0) {
       handleVictory(skill);
     } else {
-      playSE(seDamage);
+      // ★反撃演出
+      animateMonster("counter");
+      playSE(seDamage);  
       playSE(seLose);
       showResult(
         `${skill.name} を放った！<br>
-         しかし反撃を受けた…<br>
-         <span class="heal">敗北した</span>`
+         <span class="heal">しかし反撃を受け、敗北した…</span>`
       );
     }
   }, 400);
@@ -873,8 +962,14 @@ function bindEvents() {
   // story next
   if (storyNextBtn) {
     storyNextBtn.addEventListener("click", () => {
+      // ★アバター選択を取得
+      const selected = document.querySelector('input[name="avatarType"]:checked');
+      if (selected) avatarType = selected.value;
+      else avatarType = "male";
+       
       storySeen = true;
       saveStatus();
+      updateAvatarByTopStatus();
       switchScreen("main-screen");
       maybeShowNewsBanner();
     });
@@ -935,22 +1030,3 @@ window.startQuest = startQuest;
 window.backToMain = backToMain;
 window.visitGym = visitGym;
 window.backToPlayerSelect = backToPlayerSelect;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
