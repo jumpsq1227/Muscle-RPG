@@ -471,7 +471,8 @@ function saveStatus() {
     worldRecovery,
     lastTrainingDate,
 
-    superDrinkCount,
+    // superDrinkCount,
+    gachaTicketCount,
     doubleNextTraining,
 
     proteinSlimeReady,
@@ -495,7 +496,8 @@ function loadStatus() {
     worldRecovery = parsed.worldRecovery ?? 0;
     lastTrainingDate = parsed.lastTrainingDate ?? null;
     weeklyBonusGranted = parsed.weeklyBonusGranted ?? false;
-    superDrinkCount = parsed.superDrinkCount ?? 0;
+    // superDrinkCount = parsed.superDrinkCount ?? 0;
+    gachaTicketCount = parsed.gachaTicketCount ?? 0;
     doubleNextTraining = parsed.doubleNextTraining ?? false;
 
     proteinSlimeReady = parsed.proteinSlimeReady ?? false;
@@ -512,7 +514,8 @@ function loadStatus() {
     worldRecovery = 0;
     lastTrainingDate = null;
 
-    superDrinkCount = 1;
+    // superDrinkCount = 1;
+    gachaTicketCount = 1;
     doubleNextTraining = false;
 
     proteinSlimeReady = false;
@@ -579,21 +582,13 @@ function updateAvatarByTopStatus(preferType = null) {
 // アイテムUI
 function updateItemView() {
   if (!drinkCountText || !useDrinkBtn || !itemHintText || !itemToggleBtn) return;
-
-  drinkCountText.textContent = String(superDrinkCount);
-  itemToggleBtn.textContent = `🥤×${superDrinkCount}`;
-
-  if (doubleNextTraining) itemToggleBtn.classList.add("on");
-  else itemToggleBtn.classList.remove("on");
-
-  useDrinkBtn.disabled = (superDrinkCount <= 0) || doubleNextTraining;
-
-  if (doubleNextTraining) {
-    itemHintText.textContent = "【発動中】トレーニング後の復興度2倍！";
-  } else if (superDrinkCount > 0) {
-    itemHintText.textContent = "使うと、トレーニング後の復興度が2倍。";
+  drinkCountText.textContent = String(gachaTicketCount);
+  itemToggleBtn.textContent = `🎫×${gachaTicketCount}`;
+  useDrinkBtn.disabled = (gachaTicketCount <= 0);
+  if (gachaTicketCount > 0) {
+    itemHintText.textContent = "ガチャチケットで応援キャラを獲得できます。";
   } else {
-    itemHintText.textContent = "プロテインスライムを倒すと入手できます。";
+    itemHintText.textContent = "プロテインスライムを倒すとガチャチケットを入手できます。";
   }
 }
 
@@ -747,7 +742,9 @@ function handleVictory(skill){
    
   // プロテインスライム処理
   if (proteinSlimeReady) {
-    superDrinkCount += 1;
+    // superDrinkCount += 1;
+    // proteinSlimeReady = false;
+    gachaTicketCount += 1;
     proteinSlimeReady = false;
   } else {
     // 通常モンスター勝利：ジム復興度を進める
@@ -775,7 +772,7 @@ function handleVictory(skill){
       `会心の一撃！<br>
        <span class="heal">${skill.name}</span>！<br>
        <span class="heal">プロテインスライム</span>を倒した！<br>
-       <span class="heal">超回復スポドリ</span>を手に入れた！`
+       <span class="heal">ガチャチケット</span>を手に入れた！`
     );
   }
 }
@@ -1031,4 +1028,5 @@ window.startQuest = startQuest;
 window.backToMain = backToMain;
 window.visitGym = visitGym;
 window.backToPlayerSelect = backToPlayerSelect;
+
 
