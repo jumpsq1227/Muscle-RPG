@@ -542,7 +542,7 @@ function saveStatus() {
 
     // superDrinkCount,
     gachaTicketCount,
-    doubleNextTraining,
+    // doubleNextTraining,
 
     proteinSlimeReady,
     lastSlimeRollDate,
@@ -568,7 +568,7 @@ function loadStatus() {
     weeklyBonusGranted = parsed.weeklyBonusGranted ?? false;
     // superDrinkCount = parsed.superDrinkCount ?? 0;
     gachaTicketCount = parsed.gachaTicketCount ?? 0;
-    doubleNextTraining = parsed.doubleNextTraining ?? false;
+    // doubleNextTraining = parsed.doubleNextTraining ?? false;
 
     proteinSlimeReady = parsed.proteinSlimeReady ?? false;
     lastSlimeRollDate = parsed.lastSlimeRollDate ?? null;
@@ -586,7 +586,7 @@ function loadStatus() {
 
     // superDrinkCount = 1;
     gachaTicketCount = 1;
-    doubleNextTraining = false;
+    // doubleNextTraining = false;
 
     proteinSlimeReady = false;
     lastSlimeRollDate = null;
@@ -711,12 +711,6 @@ function executeTraining(trainType) {
   // ジム復興（基本+2、スポドリで2倍）
   const before = worldRecovery;
   let inc = 2;
-
-  if (doubleNextTraining) {
-    inc *= 2;
-    doubleNextTraining = false;
-  }
-
   worldRecovery = Math.min(100, worldRecovery + inc);
   const gained = worldRecovery - before;
 
@@ -1016,140 +1010,133 @@ function bindEvents() {
       e.stopPropagation();
       itemMenu.classList.toggle("hidden");
     });
+
     itemMenu.addEventListener("click", (e) => e.stopPropagation());
+
     document.addEventListener("click", () => {
-      if (!itemMenu.classList.contains("hidden")) itemMenu.classList.add("hidden");
+      if (!itemMenu.classList.contains("hidden")) {
+        itemMenu.classList.add("hidden");
+      }
     });
   }
 
-   if (useDrinkBtn) {
-     useDrinkBtn.addEventListener("click", () => {
-       drawGacha();
-     });
-   }
-
-  // if (useDrinkBtn) {
-  //   useDrinkBtn.addEventListener("click", () => {
-  //     if (superDrinkCount <= 0) {
-  //       if (itemHintText) itemHintText.textContent = "超回復スポドリは持っていません！";
-  //       return;
-  //     }
-  //     if (doubleNextTraining) {
-  //       if (itemHintText) itemHintText.textContent = "すでに次回2倍が有効です。";
-  //       return;
-  //     }
-  //     playSE(seDrink);
-  //     superDrinkCount -= 1;
-  //     doubleNextTraining = true;
-  //     saveStatus();
-  //     updateItemView();
-  //   });
-  // }
+  // ガチャ
+  if (useDrinkBtn) {
+    useDrinkBtn.addEventListener("click", () => {
+      drawGacha();
+    });
+  }
 
   // player start
-  startBtn.addEventListener("click", () => {
-    if (!playerSelect.value) {
-      alert("プレイヤーを選択してください");
-      return;
-    }
-    currentPlayer = playerSelect.value;
-    
-    playSE(setonext);
+  if (startBtn) {
+    startBtn.addEventListener("click", () => {
+      if (!playerSelect.value) {
+        alert("プレイヤーを選択してください");
+        return;
+      }
 
-   if (!maybeShowOnboardingBanner()) {
-     maybeShowNewsBanner();
-   }
-   
-    loadStatus();
-    updateStatusView();
-    updateAvatarByTopStatus();
-    updateItemView();
-    updateWorldView();
+      currentPlayer = playerSelect.value;
+      playSE(setonext);
 
-  playerNameText.textContent = `トレーニー：${currentPlayer}`;
+      loadStatus();
+      updateStatusView();
+      updateAvatarByTopStatus();
+      updateItemView();
+      updateWorldView();
 
-  // 新規開始のみストーリー
-  if (isNewGame()) {
-    switchScreen("story-screen");
-    playSE(seopening);
-    return;
+      playerNameText.textContent = `トレーニー：${currentPlayer}`;
+
+      // 新規開始のみストーリー
+      if (isNewGame()) {
+        switchScreen("story-screen");
+        playSE(seopening);
+        return;
+      }
+
+      // 通常はメイン
+      switchScreen("main-screen");
+      if (!maybeShowOnboardingBanner()) {
+        maybeShowNewsBanner();
+      }
+    });
   }
-     
-  // 通常はメイン
-  switchScreen("main-screen");
-  if (!maybeShowOnboardingBanner()) {
-    maybeShowNewsBanner();
-});
 
   // story next
   if (storyNextBtn) {
     storyNextBtn.addEventListener("click", () => {
-      // ★アバター選択を取得
       const selected = document.querySelector('input[name="avatarType"]:checked');
-      if (selected) avatarType = selected.value;
-      else avatarType = "male";
-       
-      storySeen = true;
-      if (!maybeShowOnboardingBanner()) {
-        maybeShowNewsBanner();
+      if (selected) {
+        avatarType = selected.value;
+      } else {
+        avatarType = "male";
       }
+
+      storySeen = true;
       saveStatus();
       updateAvatarByTopStatus();
+
       switchScreen("main-screen");
       if (!maybeShowOnboardingBanner()) {
         maybeShowNewsBanner();
+      }
     });
   }
 
   // training menu
-  toggleBtn.addEventListener("click", () => {
-    menu.classList.toggle("hidden");
-    playSE(setonext);
-  });
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      menu.classList.toggle("hidden");
+      playSE(setonext);
+    });
+  }
 
-  menu.addEventListener("click", (e) => {
-    if (!e.target.dataset.train) return;
-    const trainType = e.target.dataset.train;
-    playSE(setonext);
-    executeTraining(trainType);
-    menu.classList.add("hidden");
-  });
+  if (menu) {
+    menu.addEventListener("click", (e) => {
+      if (!e.target.dataset.train) return;
+      const trainType = e.target.dataset.train;
+      playSE(setonext);
+      executeTraining(trainType);
+      menu.classList.add("hidden");
+    });
+  }
 
-   
-   // reset all
-   if (resetAllBtn) {
-     resetAllBtn.addEventListener("click", () => {
-       const ok = confirm("全プレイヤーのステータスと進行状況を初期化します。よろしいですか？");
-       if (!ok) return;
-   
-       players.forEach(name => localStorage.removeItem(`muscleRPG_${name}`));
-   
-       currentPlayer = null;
-       status = { ...defaultStatus };
-       currentMonsterIndex = 0;
-       worldRecovery = 0;
-       lastTrainingDate = null;
-   
-       superDrinkCount = 0;
-       doubleNextTraining = false;
-   
-       proteinSlimeReady = false;
-       lastSlimeRollDate = null;
-       slimeCooldownUntil = null;
-   
-       weekStartKey = getWeekStartKeyTokyo();
-       weekTrainedDays = [];
-       storySeen = false;
-   
-       updateStatusView();
-       updateWorldView();
-       updateAvatarByTopStatus();
-       updateItemView();
-       playerNameText.textContent = "";
-   
-       alert("全プレイヤーを初期化しました。");
-     });
-   }
+  // reset all
+  if (resetAllBtn) {
+    resetAllBtn.addEventListener("click", () => {
+      const ok = confirm("全プレイヤーのステータスと進行状況を初期化します。よろしいですか？");
+      if (!ok) return;
+
+      players.forEach(name => localStorage.removeItem(`muscleRPG_${name}`));
+
+      currentPlayer = null;
+      status = { ...defaultStatus };
+      currentMonsterIndex = 0;
+      worldRecovery = 0;
+      firstTrainingDate = null;
+      lastTrainingDate = null;
+
+      gachaTicketCount = 0;
+      ownedSupportCharacters = [];
+
+      proteinSlimeReady = false;
+      lastSlimeRollDate = null;
+      slimeCooldownUntil = null;
+
+      weekStartKey = getWeekStartKeyTokyo();
+      weekTrainedDays = [];
+      storySeen = false;
+      avatarType = "male";
+      weeklyBonusGranted = false;
+
+      updateStatusView();
+      updateWorldView();
+      updateAvatarByTopStatus();
+      updateItemView();
+      playerNameText.textContent = "";
+
+      alert("全プレイヤーを初期化しました。");
+    });
+  }
 }
 
 window.startQuest = startQuest;
@@ -1157,6 +1144,7 @@ window.backToMain = backToMain;
 window.visitGym = visitGym;
 window.backToPlayerSelect = backToPlayerSelect;
 window.runTournamentBattle = runTournamentBattle;
+
 
 
 
