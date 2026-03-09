@@ -145,6 +145,7 @@ let avatarType = "male"; // "male" or "female"
 
 let status = { ...defaultStatus };
 let worldRecovery = 0;           // 0〜100
+let firstTrainingDate = null;
 let lastTrainingDate = null;     // "YYYY-MM-DD"
 
 // 週4回カウント
@@ -494,6 +495,12 @@ function maybeShowNewsBanner() {
 /* =========================================================
    10) 保存 / 読み込み
 ========================================================= */
+function getOnboardingDays() {
+  if (!firstTrainingDate) return 0;
+  const todayKey = getTodayKeyTokyo();
+  return diffDaysTokyo(firstTrainingDate, todayKey) + 1;
+}
+
 function saveStatus() {
   if (!currentPlayer) return; // ★保険
   const saveData = {
@@ -502,6 +509,7 @@ function saveStatus() {
     monsterIndex: currentMonsterIndex,
     weeklyBonusGranted: weeklyBonusGranted,
     worldRecovery,
+    firstTrainingDate,
     lastTrainingDate,
 
     // superDrinkCount,
@@ -527,6 +535,7 @@ function loadStatus() {
     status = parsed.status ?? { ...defaultStatus };
     currentMonsterIndex = parsed.monsterIndex ?? 0;
     worldRecovery = parsed.worldRecovery ?? 0;
+    firstTrainingDate = parsed.firstTrainingDate ?? null;
     lastTrainingDate = parsed.lastTrainingDate ?? null;
     weeklyBonusGranted = parsed.weeklyBonusGranted ?? false;
     // superDrinkCount = parsed.superDrinkCount ?? 0;
@@ -649,7 +658,31 @@ function getTrainingImage(trainType) {
   return `images/training/${style}/${trainType}.png`;
 }
 
+function maybeShowOnboardingBanner() {
+  const days = getOnboardingDays();
+  if (days <= 0 || days > 7) return false;
+
+  const targetDays = [1, 3, 7];
+  const rewards = { 1: 1, 3: 1, 7: 2 };
+
+  for (const d of targetDays) {
+    if (days <= d) {
+      const remain = d - days;
+      if (remain === 0) {
+        setBanner(`【初期定着】${d}日継続達成！ガチャチケット${rewards[d]}枚獲得！`);
+      } else {
+        setBanner(`【初期定着】あと${remain}日継続でガチャチケット${rewards[d]}枚！`);
+      }
+      return true;
+    }
+  }
+  return false;
+}
+
 function executeTraining(trainType) {
+   if (!firstTrainingDate) {
+     firstTrainingDate = todayKey;
+   }
   if (!(trainType in status)) return;
 
   // ステータス成長
@@ -976,6 +1009,10 @@ function bindEvents() {
     
     playSE(setonext);
 
+   if (!maybeShowOnboardingBanner()) {
+     maybeShowNewsBanner();
+   }
+   
     loadStatus();
     updateStatusView();
     updateAvatarByTopStatus();
@@ -1005,6 +1042,9 @@ function bindEvents() {
       else avatarType = "male";
        
       storySeen = true;
+      if (!maybeShowOnboardingBanner()) {
+        maybeShowNewsBanner();
+      }
       saveStatus();
       updateAvatarByTopStatus();
       switchScreen("main-screen");
@@ -1067,6 +1107,7 @@ window.startQuest = startQuest;
 window.backToMain = backToMain;
 window.visitGym = visitGym;
 window.backToPlayerSelect = backToPlayerSelect;
+
 
 
 
