@@ -428,6 +428,40 @@ function drawGacha() {
 /* =========================================================
    9) バナー（フェイク）
 ========================================================= */
+function getOnboardingDays() {
+  if (!firstTrainingDate) return 0;
+  const todayKey = getTodayKeyTokyo();
+  return diffDaysTokyo(firstTrainingDate, todayKey) + 1;
+}
+
+function maybeShowOnboardingBanner() {
+  if (!newsBanner) return false;
+
+  const days = getOnboardingDays();
+  if (days <= 0 || days > 7) return false;
+
+  // 例：1日、3日、7日でチケット報酬を見せる
+  const milestones = [
+    { day: 1, reward: 1 },
+    { day: 3, reward: 1 },
+    { day: 7, reward: 2 }
+  ];
+
+  for (const m of milestones) {
+    if (days < m.day) {
+      const remain = m.day - days;
+      setBanner(`【初期定着】あと${remain}日継続でガチャチケット${m.reward}枚！`);
+      return true;
+    }
+    if (days === m.day) {
+      setBanner(`【初期定着】${m.day}日継続達成！ガチャチケット${m.reward}枚獲得！`);
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function makeFakeActivityText() {
   const actions = ["胸トレ", "背中トレ", "脚トレ", "ランニング"]; // walk削除
   const when = ["先ほど", "さっき", "今日", "少し前に"][Math.floor(Math.random() * 4)];
@@ -495,12 +529,6 @@ function maybeShowNewsBanner() {
 /* =========================================================
    10) 保存 / 読み込み
 ========================================================= */
-function getOnboardingDays() {
-  if (!firstTrainingDate) return 0;
-  const todayKey = getTodayKeyTokyo();
-  return diffDaysTokyo(firstTrainingDate, todayKey) + 1;
-}
-
 function saveStatus() {
   if (!currentPlayer) return; // ★保険
   const saveData = {
@@ -658,31 +686,7 @@ function getTrainingImage(trainType) {
   return `images/training/${style}/${trainType}.png`;
 }
 
-function maybeShowOnboardingBanner() {
-  const days = getOnboardingDays();
-  if (days <= 0 || days > 7) return false;
-
-  const targetDays = [1, 3, 7];
-  const rewards = { 1: 1, 3: 1, 7: 2 };
-
-  for (const d of targetDays) {
-    if (days <= d) {
-      const remain = d - days;
-      if (remain === 0) {
-        setBanner(`【初期定着】${d}日継続達成！ガチャチケット${rewards[d]}枚獲得！`);
-      } else {
-        setBanner(`【初期定着】あと${remain}日継続でガチャチケット${rewards[d]}枚！`);
-      }
-      return true;
-    }
-  }
-  return false;
-}
-
 function executeTraining(trainType) {
-   if (!firstTrainingDate) {
-     firstTrainingDate = todayKey;
-   }
   if (!(trainType in status)) return;
 
   // ステータス成長
@@ -690,6 +694,9 @@ function executeTraining(trainType) {
 
   // 週4カウント更新（同日複数回は1回）
   const todayKey = getTodayKeyTokyo();
+  if (!firstTrainingDate) {
+   firstTrainingDate = todayKey;
+  }
   updateWeeklyOnTraining(todayKey);
 
   // ★ここでチェック
@@ -740,7 +747,6 @@ function executeTraining(trainType) {
   resultImage.classList.remove("hidden");
 
   switchScreen("result-screen");
-  maybeShowNewsBanner();
 }
 
 let skillSelect = null;
@@ -788,9 +794,7 @@ function startQuest() {
   updateSkillSelect();
   setMonsterHp(100);
   switchScreen("quest-screen");
-
 }
-
 
 function getMaxStatTypes(){
   const types = ["run","chest","back","leg"];
@@ -904,6 +908,49 @@ function battle(){
 
 function getGymStageByRecovery(recovery) {
   return gymStages.find(stage => recovery >= stage.min && recovery <= stage.max);
+}
+
+function getTotalPower(st) {
+  return (st.run ?? 1) + (st.chest ?? 1) + (st.back ?? 1) + (st.leg ?? 1);
+}
+
+function runTournamentBattle() {
+  const others = players.filter(name => name !== currentPlayer);
+
+  const candidates = others
+    .map(name => {
+      const data = loadPlayerData(name);
+      return { name, data };
+    })
+    .filter(x => x.data && x.data.status);
+
+  if (candidates.length === 0) {
+    showResult("天下一武闘会の相手がまだいないようだ…");
+    return;
+  }
+
+  const enemy = candidates[Math.floor(Math.random() * candidates.length)];
+
+  const myPower = getTotalPower(status);
+  const enemyPower = getTotalPower(enemy.data.status);
+
+  let resultHtml = "";
+
+  if (myPower >= enemyPower) {
+    resultHtml = `
+      天下一武●会！<br>
+      <span class="heal">${enemy.name}</span>に勝利した！<br>
+      <span class="recovery-text">総合戦闘力 ${myPower} vs ${enemyPower}</span>
+    `;
+  } else {
+    resultHtml = `
+      天下一武●会！<br>
+      <span class="heal">${enemy.name}</span>に敗北した…<br>
+      <span class="recovery-text">総合戦闘力 ${myPower} vs ${enemyPower}</span>
+    `;
+  }
+
+  showResult(resultHtml);
 }
 
 function visitGym() {
@@ -1030,7 +1077,8 @@ function bindEvents() {
      
   // 通常はメイン
   switchScreen("main-screen");
-  maybeShowNewsBanner();
+  if (!maybeShowOnboardingBanner()) {
+    maybeShowNewsBanner();
 });
 
   // story next
@@ -1048,7 +1096,8 @@ function bindEvents() {
       saveStatus();
       updateAvatarByTopStatus();
       switchScreen("main-screen");
-      maybeShowNewsBanner();
+      if (!maybeShowOnboardingBanner()) {
+        maybeShowNewsBanner();
     });
   }
 
@@ -1107,6 +1156,7 @@ window.startQuest = startQuest;
 window.backToMain = backToMain;
 window.visitGym = visitGym;
 window.backToPlayerSelect = backToPlayerSelect;
+
 
 
 
