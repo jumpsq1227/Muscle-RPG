@@ -95,6 +95,12 @@ button:hover{
   image-rendering: pixelated;
   filter: drop-shadow(2px 2px 0 var(--black));
 }
+.avatar-choice {
+  display: flex;
+  gap: 12px;           /* カード間の余白 */
+  justify-content: center;
+  margin-top: 12px;
+}
 
 /* ---- Item ---- */
 .item-chip{
@@ -150,6 +156,14 @@ button:hover{
   transition: width 0.35s;
 }
 
+.recovery-text {
+  color: #00aa66;
+  font-weight: bold;
+  text-shadow:
+    1px 1px 0 #003322,
+    -1px 1px 0 #003322;
+}
+
 /* ---- Reliability ---- */
 .reliability-row{
   display:flex;
@@ -182,6 +196,13 @@ button:hover{
   padding-top: 24px;
   background: url("images/bg_field.png") no-repeat center;
   background-size: min(90vw, 400px);
+}
+
+.story-teaser{
+  width: min(92vw, 420px);
+  padding: 14px;
+  border: 2px solid var(--border);
+  background: rgba(0,0,0,0.65);
 }
 
 #resetAllBtn{
@@ -226,6 +247,31 @@ button:hover{
   margin-bottom: 4px;
   opacity: 0.95;
 }
+
+/* ===== モンスター演出 ===== */
+
+/* 被弾：少し縮む */
+.monster-hit {
+  animation: monsterHit 0.25s ease-out;
+}
+
+@keyframes monsterHit {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+/* 反撃：少し大きくなる（威圧） */
+.monster-counter {
+  animation: monsterCounter 0.35s ease-out;
+}
+
+@keyframes monsterCounter {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
 
 .skill-box{
   width: min(92vw, 320px);
