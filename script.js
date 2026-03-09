@@ -105,6 +105,17 @@ const monsterList = [
   { name: "ボディービルダー【強】", level: 20, image: "images/monster/bodybuilder2.png" },
 ];
 
+const SUPPORT_CHARACTERS = [
+  { name: "マッスリーヌ姫", rarity: "SSR", image: "images/support/hime.png" },
+  { name: "ただの村人", rarity: "R", image: "images/support/murabitoA.png" },
+  { name: "ただの村人", rarity: "R", image: "images/support/murabitoA.png" },
+  { name: "ただの村人", rarity: "R", image: "images/support/murabitoA.png" },
+  { name: "ただの村人", rarity: "R", image: "images/support/murabitoA.png" },
+  { name: "ただの村人", rarity: "R", image: "images/support/murabitoA.png" },
+  { name: "村の子供たち", rarity: "R", image: "images/support/murabitoB.png" },
+  { name: "村の子供たち", rarity: "R", image: "images/support/murabitoB.png" },
+];
+
 // SE
 const seopening = new Audio("sound/opening.mp3");
 const seLevelUp = new Audio("sound/levelup.mp3");
@@ -152,6 +163,7 @@ let gachaTicketCount = 0;
 let proteinSlimeReady = false;
 let lastSlimeRollDate = null;
 let slimeCooldownUntil = null;
+let ownedSupportCharacters = [];
 
 // 進行
 let currentMonsterIndex = 0;
@@ -389,6 +401,27 @@ function rollProteinSlimeIfNeeded() {
 
   lastSlimeRollDate = todayKey;
   saveStatus();
+}
+
+function drawGacha() {
+  if (gachaTicketCount <= 0) {
+    itemHintText.textContent = "ガチャチケットがありません！";
+    return;
+  }
+
+  gachaTicketCount -= 1;
+
+  const picked = SUPPORT_CHARACTERS[Math.floor(Math.random() * SUPPORT_CHARACTERS.length)];
+  ownedSupportCharacters.push(picked.name);
+
+  saveStatus();
+  updateItemView();
+
+  showResult(
+    `ガチャを回した！<br>
+     <span class="heal">${picked.rarity}</span><br>
+     <span class="heal">${picked.name}</span>を仲間にした！`
+  );
 }
 
 /* =========================================================
@@ -909,23 +942,29 @@ function bindEvents() {
     });
   }
 
-  if (useDrinkBtn) {
-    useDrinkBtn.addEventListener("click", () => {
-      if (superDrinkCount <= 0) {
-        if (itemHintText) itemHintText.textContent = "超回復スポドリは持っていません！";
-        return;
-      }
-      if (doubleNextTraining) {
-        if (itemHintText) itemHintText.textContent = "すでに次回2倍が有効です。";
-        return;
-      }
-      playSE(seDrink);
-      superDrinkCount -= 1;
-      doubleNextTraining = true;
-      saveStatus();
-      updateItemView();
-    });
-  }
+   if (useDrinkBtn) {
+     useDrinkBtn.addEventListener("click", () => {
+       drawGacha();
+     });
+   }
+
+  // if (useDrinkBtn) {
+  //   useDrinkBtn.addEventListener("click", () => {
+  //     if (superDrinkCount <= 0) {
+  //       if (itemHintText) itemHintText.textContent = "超回復スポドリは持っていません！";
+  //       return;
+  //     }
+  //     if (doubleNextTraining) {
+  //       if (itemHintText) itemHintText.textContent = "すでに次回2倍が有効です。";
+  //       return;
+  //     }
+  //     playSE(seDrink);
+  //     superDrinkCount -= 1;
+  //     doubleNextTraining = true;
+  //     saveStatus();
+  //     updateItemView();
+  //   });
+  // }
 
   // player start
   startBtn.addEventListener("click", () => {
@@ -1028,5 +1067,6 @@ window.startQuest = startQuest;
 window.backToMain = backToMain;
 window.visitGym = visitGym;
 window.backToPlayerSelect = backToPlayerSelect;
+
 
 
