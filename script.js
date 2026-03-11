@@ -406,7 +406,7 @@ function rollProteinSlimeIfNeeded() {
 
 function drawGacha() {
   if (gachaTicketCount <= 0) {
-    itemHintText.textContent = "ガチャチケットがありません！";
+    if (itemuHintText) itemHintText.textContent = "ガチャチケットがありません！";
     return;
   }
 
@@ -418,6 +418,15 @@ function drawGacha() {
   saveStatus();
   updateItemView();
 
+  const resultImage = document.getElementById("resultImage");
+  if (resultImage) {
+    resultImage.src = picked.image;
+    resultImage.onerror = () => {
+      resultImage.onerror = null;
+      resultImage.src = "images/support/default.png"; // 予備画像があれば
+    };
+    resultImage.classList.remove("hidden");
+  }
   showResult(
     `ガチャを回した！<br>
      <span class="heal">${picked.rarity}</span><br>
@@ -1144,6 +1153,7 @@ window.backToMain = backToMain;
 window.visitGym = visitGym;
 window.backToPlayerSelect = backToPlayerSelect;
 window.runTournamentBattle = runTournamentBattle;
+
 
 
 
