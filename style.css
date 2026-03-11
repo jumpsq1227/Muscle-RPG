@@ -300,3 +300,11 @@ button:hover{
    display: block;
 }
 
+.result-image{
+  width: 140px;
+  height: auto;
+  display: block;
+  margin: 12px auto;
+  image-rendering: pixelated;
+}
+
