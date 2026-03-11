@@ -406,7 +406,7 @@ function rollProteinSlimeIfNeeded() {
 
 function drawGacha() {
   if (gachaTicketCount <= 0) {
-    if (itemuHintText) itemHintText.textContent = "ガチャチケットがありません！";
+    if (itemHintText) itemHintText.textContent = "ガチャチケットがありません！";
     return;
   }
 
@@ -1153,6 +1153,7 @@ window.backToMain = backToMain;
 window.visitGym = visitGym;
 window.backToPlayerSelect = backToPlayerSelect;
 window.runTournamentBattle = runTournamentBattle;
+
 
 
 
